@@ -1,3 +1,16 @@
+// Replace with the actual airdrop contract address
+const AIRDROP_CONTRACT = "0xcA11bde05977b3631167028862bE2a173976CA11";
+
+// Linea RPC via Infura
+const RPC_URL = "https://linea-mainnet.infura.io/v3/9d60b7d314be4567adf4530f4b9dd801";
+
+// Encode "balanceOf(address)" ABI manually
+function encodeBalanceOf(address) {
+  const methodId = "0x70a08231"; // keccak256("balanceOf(address)") first 4 bytes
+  const paddedAddr = address.toLowerCase().replace("0x", "").padStart(64, "0");
+  return methodId + paddedAddr;
+}
+
 async function checkAirdrop() {
   const textarea = document.getElementById("addresses");
   const addresses = textarea.value.split("\n").map(a => a.trim()).filter(a => a);
@@ -18,8 +31,9 @@ async function checkAirdrop() {
 
   for (let i = 0; i < addresses.length; i++) {
     const addr = addresses[i];
+
     try {
-      const response = await fetch("https://linea-mainnet.infura.io/v3/9d60b7d314be4567adf4530f4b9dd801", {
+      const response = await fetch(RPC_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -27,8 +41,8 @@ async function checkAirdrop() {
           method: "eth_call",
           params: [
             {
-              to: "0xcA11bde05977b3631167028862bE2a173976CA11", // Airdrop contract
-              data: addr // ⚠️ you may need to encode ABI properly here
+              to: AIRDROP_CONTRACT,
+              data: encodeBalanceOf(addr)
             },
             "latest"
           ],
@@ -38,10 +52,9 @@ async function checkAirdrop() {
 
       const data = await response.json();
 
-      // Convert hex result (wei) to tokens
       let tokenAmount = 0;
       if (data.result) {
-        tokenAmount = parseInt(data.result, 16) / 1e18; // convert wei -> tokens
+        tokenAmount = parseInt(data.result, 16) / 1e18; // wei → tokens
       }
 
       results[addr] = tokenAmount;
