@@ -1,39 +1,16 @@
-// Replace with the actual airdrop contract address
-const AIRDROP_CONTRACT = "0xcA11bde05977b3631167028862bE2a173976CA11";
+async function checkEligibility() {
+  const input = document.getElementById("addresses").value;
+  const addresses = input.split("\n").map(a => a.trim()).filter(a => a.length > 0);
 
-// Linea RPC via Infura
-const RPC_URL = "https://linea-mainnet.infura.io/v3/9d60b7d314be4567adf4530f4b9dd801";
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "Checking...";
 
-// Encode "balanceOf(address)" ABI manually
-function encodeBalanceOf(address) {
-  const methodId = "0x70a08231"; // keccak256("balanceOf(address)") first 4 bytes
-  const paddedAddr = address.toLowerCase().replace("0x", "").padStart(64, "0");
-  return methodId + paddedAddr;
-}
+  let results = {};
 
-async function checkAirdrop() {
-  const textarea = document.getElementById("addresses");
-  const addresses = textarea.value.split("\n").map(a => a.trim()).filter(a => a);
-
-  if (addresses.length === 0) {
-    alert("Please enter at least one address");
-    return;
-  }
-
-  const results = {};
-  const progressContainer = document.getElementById("progress-container");
-  const progressBar = document.getElementById("progress-bar");
-  const progressText = document.getElementById("progress-text");
-
-  progressContainer.style.display = "block";
-  progressBar.value = 0;
-  progressText.textContent = "Checking addresses...";
-
-  for (let i = 0; i < addresses.length; i++) {
-    const addr = addresses[i];
-
+  for (const address of addresses) {
     try {
-      const response = await fetch(RPC_URL, {
+      // Call Linea Infura RPC
+      const response = await fetch("https://linea-mainnet.infura.io/v3/9d60b7d314be4567adf4530f4b9dd801", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -41,8 +18,10 @@ async function checkAirdrop() {
           method: "eth_call",
           params: [
             {
-              to: AIRDROP_CONTRACT,
-              data: encodeBalanceOf(addr)
+              // 👇 contract that handles airdrop checks
+              to: "0xcA11bde05977b3631167028862bE2a173976CA11",
+              // 👇 function selector + wallet address (replace if Payload shows different one!)
+              data: `0x82ad56cb${address.slice(2).padStart(64, "0")}`
             },
             "latest"
           ],
@@ -52,21 +31,16 @@ async function checkAirdrop() {
 
       const data = await response.json();
 
-      let tokenAmount = 0;
-      if (data.result) {
-        tokenAmount = parseInt(data.result, 16) / 1e18; // wei → tokens
-      }
+      // result is in hex → convert to number
+      const hexValue = data.result || "0x0";
+      const tokenAmount = parseInt(hexValue, 16) / 1e18;
 
-      results[addr] = tokenAmount;
-    } catch (e) {
-      results[addr] = `Error: ${e.message}`;
+      results[address] = tokenAmount.toLocaleString();
+    } catch (err) {
+      results[address] = "Error fetching";
     }
-
-    // Update progress bar
-    progressBar.value = ((i + 1) / addresses.length) * 100;
-    progressText.textContent = `Checked ${i + 1} of ${addresses.length}`;
   }
 
-  progressText.textContent = "Done ✅";
-  document.getElementById("results").textContent = JSON.stringify(results, null, 2);
+  // Display results
+  resultsDiv.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
 }
