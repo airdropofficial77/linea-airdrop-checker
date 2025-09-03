@@ -11,7 +11,15 @@
   <textarea id="addresses" rows="10" cols="50" placeholder="Paste wallet addresses, one per line"></textarea>
   <br />
   <button onclick="checkAirdrop()">Check Eligibility</button>
+
+  <!-- Progress -->
+  <div id="progress-container" style="display:none; margin: 15px 0;">
+    <progress id="progress-bar" value="0" max="100" style="width:100%;"></progress>
+    <p id="progress-text"></p>
+  </div>
+
   <pre id="results"></pre>
+
   <script src="script.js"></script>
 </body>
 </html>
