@@ -3,13 +3,13 @@ async function checkEligibility() {
   const addresses = input.split("\n").map(a => a.trim()).filter(a => a.length > 0);
 
   const resultsDiv = document.getElementById("results");
-  resultsDiv.innerHTML = "Checking...";
+  resultsDiv.innerHTML = "⏳ Checking...";
 
   let results = {};
 
   for (const address of addresses) {
     try {
-      // Call Linea Infura RPC
+      // Fetch from Linea Infura RPC
       const response = await fetch("https://linea-mainnet.infura.io/v3/9d60b7d314be4567adf4530f4b9dd801", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -18,9 +18,9 @@ async function checkEligibility() {
           method: "eth_call",
           params: [
             {
-              // 👇 contract that handles airdrop checks
+              // Contract that manages the eligibility
               to: "0xcA11bde05977b3631167028862bE2a173976CA11",
-              // 👇 function selector + wallet address (replace if Payload shows different one!)
+              // Function selector (0x82ad56cb) + padded address
               data: `0x82ad56cb${address.slice(2).padStart(64, "0")}`
             },
             "latest"
@@ -31,16 +31,15 @@ async function checkEligibility() {
 
       const data = await response.json();
 
-      // result is in hex → convert to number
+      // Result comes in hex → convert
       const hexValue = data.result || "0x0";
       const tokenAmount = parseInt(hexValue, 16) / 1e18;
 
       results[address] = tokenAmount.toLocaleString();
     } catch (err) {
-      results[address] = "Error fetching";
+      results[address] = "⚠️ Error fetching";
     }
   }
 
-  // Display results
-  resultsDiv.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
+  resultsDiv.innerHTML = JSON.stringify(results, null, 2);
 }
