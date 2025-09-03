@@ -2,17 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Linea Airdrop Bulk Checker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h2>Linea Airdrop Bulk Checker</h2>
-    <textarea id="addresses" rows="6" cols="60" placeholder="Enter one address per line"></textarea>
-    <br><br>
-    <button onclick="checkEligibility()">Check Eligibility</button>
+    <h1>Linea Airdrop Bulk Checker</h1>
+    <form id="airdrop-form">
+      <textarea id="addresses" placeholder="Enter one address per line"></textarea>
+      <button type="submit">Check Eligibility</button>
+    </form>
+
+    <div class="progress-container">
+      <div id="progress-bar"></div>
+    </div>
+    <p id="status"></p>
+
     <div id="results"></div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
