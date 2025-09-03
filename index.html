@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Linea Airdrop Bulk Checker</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Linea Airdrop Bulk Checker</h1>
-
-  <textarea id="addresses" rows="10" cols="60" placeholder="Paste wallet addresses, one per line"></textarea>
-  <br />
-  <button onclick="checkAirdrop()">Check Eligibility</button>
-
-  <!-- Progress -->
-  <div id="progress-container" style="display:none; margin: 15px 0;">
-    <progress id="progress-bar" value="0" max="100" style="width:100%;"></progress>
-    <p id="progress-text"></p>
+  <div class="container">
+    <h2>Linea Airdrop Bulk Checker</h2>
+    <textarea id="addresses" rows="6" cols="60" placeholder="Enter one address per line"></textarea>
+    <br><br>
+    <button onclick="checkEligibility()">Check Eligibility</button>
+    <div id="results"></div>
   </div>
-
-  <pre id="results"></pre>
-
   <script src="script.js"></script>
 </body>
 </html>
