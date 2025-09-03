@@ -20,7 +20,7 @@ function padAddress(addr) {
 // Shows up to 4 decimals, trims trailing zeros.
 function weiToTokenString(hexWei, decimals = 18, dp = 4) {
   const wei = BigInt(hexWei);
-  const base = 10n  BigInt(decimals);
+  const base = 10n ** BigInt(decimals);
   const whole = wei / base;
   const frac = wei % base;
 
@@ -29,13 +29,13 @@ function weiToTokenString(hexWei, decimals = 18, dp = 4) {
   }
 
   // scale fractional to requested decimals
-  const scale = 10n  BigInt(dp);
+  const scale = 10n ** BigInt(dp);
   const fracScaled = (frac * scale) / base;
 
   let fracStr = fracScaled.toString().padStart(dp, "0");
   // trim trailing zeros
   fracStr = fracStr.replace(/0+$/, "");
-  return fracStr.length ? ${Number(whole).toLocaleString()}.${fracStr} : Number(whole).toLocaleString();
+  return fracStr.length ? `${Number(whole).toLocaleString()}.${fracStr}` : Number(whole).toLocaleString();
 }
 
 async function rpcEthCall(to, data) {
@@ -53,8 +53,8 @@ async function rpcEthCall(to, data) {
   });
 
   const json = await res.json();
-  if (!res.ok  json.error) {
-    throw new Error(json?.error?.message  RPC error (${res.status}));
+  if (!res.ok || json.error) {
+    throw new Error(json?.error?.message || `RPC error (${res.status})`);
   }
   return json.result; // hex string like "0x0000...<32 bytes>"
 }
@@ -67,7 +67,7 @@ async function checkLineaAirdrop(address) {
   // Call the contract directly (not the Multicall3 wrapper)
   const resultHex = await rpcEthCall(AIRDROP_CONTRACT, data);
 
-  // If the contract returns a single uint256, resultHex is 32 bytes ABI-encoded
+  // If the contract returns a single uint256, `resultHex` is 32 bytes ABI-encoded
   // Convert to token string (18 decimals assumed)
   const tokensStr = weiToTokenString(resultHex, 18, 4); // show up to 4 decimals
   return tokensStr;
@@ -92,14 +92,14 @@ form.addEventListener("submit", async (e) => {
     const addr = addresses[i];
     try {
       const tokens = await checkLineaAirdrop(addr);
-      results[addr] = ${tokens} LINEA;
+      results[addr] = `${tokens} LINEA`;
     } catch (err) {
       console.error(err);
       results[addr] = "❌ Error";
     }
-    progressBar.style.width = ${Math.round(((i + 1) / addresses.length) * 100)}%;
+    progressBar.style.width = `${Math.round(((i + 1) / addresses.length) * 100)}%`;
   }
 
   statusText.textContent = "Done ✅";
-  resultsDiv.innerHTML = <pre>${JSON.stringify(results, null, 2)}</pre>;
+  resultsDiv.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
 });
