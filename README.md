@@ -1,0 +1,1 @@
+# linea-airdrop-checker
