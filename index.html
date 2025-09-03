@@ -3,22 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linea Airdrop Bulk Checker</title>
+  <title>Linea Airdrop Checker</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Linea Airdrop Bulk Checker</h1>
+    <h1>🚀 Linea Airdrop Checker</h1>
+
     <form id="airdrop-form">
-      <textarea id="addresses" placeholder="Enter one address per line"></textarea>
-      <button type="submit">Check Eligibility</button>
+      <label for="addresses">Enter wallet addresses (one per line):</label>
+      <textarea id="addresses" rows="6" placeholder="0x1234..."></textarea>
+      <button type="submit">Check Airdrop</button>
     </form>
 
     <div class="progress-container">
       <div id="progress-bar"></div>
     </div>
-    <p id="status"></p>
+    <p id="status">Idle</p>
+
     <div id="results"></div>
+
+    <!-- Follow Buttons -->
+    <div class="follow-section">
+      <a href="https://t.me/airdropofficial7" target="_blank" class="btn-telegram">
+        🚀 Join Telegram
+      </a>
+      <a href="https://x.com/its_airdrop" target="_blank" class="btn-twitter">
+        🐦 Follow on Twitter
+      </a>
+    </div>
   </div>
 
   <script src="script.js"></script>
